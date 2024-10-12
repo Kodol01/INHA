@@ -6,6 +6,21 @@ router.get('/book', function(req, res, next) {
   res.render('index', { title: '도서검색', pageName:'kakao/book.ejs' });
 });
 
+//도서정보 페이지
+router.get("/book/info", function(req, res){
+  const title=req.query.title;
+  const thumbnail=req.query.thumbnail;
+  const price=req.query.price;
+  const authors=req.query.authors;
+  const isbn=req.query.isbn;
+  const publisher=req.query.publisher;
+  const contents=req.query.contents;
+
+  console.log("title", title);
+  const info= {title, thumbnail, price, authors, isbn, publisher, contents}
+  res.render('index', { title: '도서정보', pageName:'kakao/info.ejs', info });
+})
+
 //지역검색
 router.get('/local', function(req, res){
   res.render('index', { title: '지역검색', pageName:'kakao/local.ejs' });
