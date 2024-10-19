@@ -13,7 +13,7 @@
                 <div class="mb-3">출판사: <%=info.publisher%></div>
                 <div class="mb-3">ISBN: <%=info.isbn%></div>
                 <div>
-                    <button class="btn btn-success">장바구니</button>
+                    <button class="btn btn-success px-5 cart">장바구니</button>
                     <button class="btn btn-warning">구매</button>
                 </div>
             </div>
@@ -24,3 +24,13 @@
         </div>
     </div>
 </div>
+<script>
+    $(".cart").on("click", function(){
+        if(email){
+
+        }else{
+            sessionStorage.location=window.href;
+            location.href="/users/login";
+        }
+    })
+</script>
