@@ -10,12 +10,12 @@
     <hr>
 </div>
 <script>
-    const email=sessionStorage.getItem("email")
+    const email=sessionStorage.getItem("email") //가져올 때 ""붙여서 가져온다.
     const uid=sessionStorage.getItem("uid")
 
     if(email){ //로그인 상태
         $("#login").hide();
-        $("#logout, #mypage, #cart").show();
+        $("#logout, #mypage, .cart").show(); //id는 #, class는 .
         $("#mypage").html(email);
       }else{ //로그아웃 상태
         $("#login").show();
@@ -24,8 +24,9 @@
     
       $("#logout").on("click", function(e){
         e.preventDefault();
-        if(!confirm("정말로 로그아웃 하실래요?")) return;
-        sessionStorage.clear();
-        location.href="/";
+        if(!confirm("정말로 로그아웃 하실래요?")) return; //로그아웃 클릭하면 알림창 띄워서 한번 더 확인하고 취소누르면 다시 return되게한다.
+        sessionStorage.clear(); //로그아웃되면 임시로 생긴 sessionStorage를 클리어한다.
+        location.href="/"; //홈으로 이동
+        location.href=""; //로그아웃 누를 때 있었던 페이지로 이동
       });
 </script>

@@ -16,7 +16,6 @@ router.get("/book/info", function(req, res){
   const publisher=req.query.publisher;
   const contents=req.query.contents;
 
-  console.log("title", title);
   const info= {title, thumbnail, price, authors, isbn, publisher, contents}
   res.render('index', { title: '도서정보', pageName:'kakao/info.ejs', info });
 })

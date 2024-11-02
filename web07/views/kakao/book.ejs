@@ -4,7 +4,7 @@
         <div class="col-md-4 mb-3">
             <form name="frm">
                 <div class="input-group">
-                    <input name="query" value="한강" class="form-control">
+                    <input name="query" value="인하대학교" class="form-control">
                     <button class="btn btn-success">검색</button>
                 </div>
             </form>
@@ -18,6 +18,12 @@
     </div>
     <script id="temp_list" type="x-handlebars-template">
         <table class="table table-striped table-hover">
+            <tr>
+                <td colspan="2" class="text-center">제목</td>
+                <td colspan="2">가격</td>
+                <td>저자</td>
+                <td colspan="2"></td>
+            </tr>
             {{#each documents}}
             <tr>
                 <td><img src="{{funThumbnail thumbnail}}" width="50px" ></td>
@@ -39,7 +45,8 @@
     </script>
     <script>
         Handlebars.registerHelper("strBook", function(book){
-          return JSON.stringify(book);
+            console.log(JSON.stringify(book));
+            return JSON.stringify(book); //책 정보들을 JSON문자열로 변환하여 리턴
         });
     </script>
 </div>
@@ -80,8 +87,8 @@
     //장바구니 버튼을 클릭한 경우
     $("#div_list").on("click", ".cart",async function(){
         if(uid){
-            const book = JSON.parse($(this).attr("book"));
-            console.log(book);
+            const book = JSON.parse($(this).attr("book")); //JSON문자열 중에 this 즉 클릭한 책의 속성들만 불러와 book에 저장
+            //console.log(book);
             const ref_cart = ref(db, `cart/${uid}/${book.isbn}`);
             const snapshot = await get(ref_cart)
             if(snapshot.val()){
@@ -97,10 +104,8 @@
     });
 
     $("#div_list").on("click", ".bookModals", function() {
-        console.log("Click");
         const book = JSON.parse($(this).attr("book"));
-        console.log(book);
-
+        
         $("#bookTitle").text(book.title);
         $("#bookContent").text(book.contents);
 
