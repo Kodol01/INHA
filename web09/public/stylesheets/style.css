@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+* {
+  font-family: "Jua", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 한줄이 넘어가면 ... 처리 */
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}

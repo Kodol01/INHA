@@ -1,0 +1,39 @@
+<div class="row my-5 justify-content-center"><!-- 행 가운데정렬(수직정렬)-->
+    <div class="col-10 col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3><%=title%></h3>
+            </div>
+            <div class="card-body">
+                <form name="frm">
+                    <input class="form-control mb-3" name="email" value="blue@test.com">
+                    <input class="form-control mb-3" type="password" name="pass" value="12341234">
+                    <button class="btn btn-primary w-100">회원가입</button>
+                </form>
+                <div class="text-end mt-3">
+                    <a href="/users/join">로그인</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- import 하기 위해 type을 module로 -->
+<script type="module">
+    import {app} from '/javascripts/config.js';
+    import {getAuth,  createUserWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    const auth=getAuth(app);
+
+    // 회원가입 버튼 클릭 시
+    $(frm).on("submit", function(e) {
+        e.preventDefault(); // submit 이벤트 방지
+        const email = $(frm.email).val();
+        const pass = $(frm.pass).val();
+
+        createUserWithEmailAndPassword(auth, email, pass).then(success=>{
+            alert("회원가입 성공!");
+            location.href = "/users/login";
+        }).catch(error=>{
+            alert("회원가입 실패! " + error.message);
+        })
+    });
+</script>

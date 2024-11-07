@@ -1,0 +1,126 @@
+<div>
+    <h1 class="text-center my-5"><%=title%></h1>
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <form name="frm">
+          <div class="input-group">
+            <input name="query" class="form-control" value="Node.js">
+            <button class="btn btn-primary">검색</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <hr>
+    <div id="div_list"></div>
+    <div class="text-center">
+      <button id="prev" class="btn btn-primary btn-sm">이전</button>
+      <span id="page" class="mx-3">1</span>
+      <button id="next" class="btn btn-primary btn-sm">다음</button>
+    </div>
+    <script type="x-handlebars-template" id="temp_list">
+      <table class="table">
+        {{#each documents}}
+          <tr>
+            <td><img src="{{funThumbnail thumbnail}}" width="30"></td>
+            <td>{{title}}</td>
+            <td>{{price}}</td>
+            <td>{{authors}}</td>
+            <td width="70px"><%-include('modal_book.ejs')%></td>
+            <td width="70px"><button class="btn btn-success btn-sm cart" book="{{strBook @this}}">카트</button></td>
+            
+          </tr>  
+        {{/each}}
+      </table>  
+    </script>
+    <script>
+      Handlebars.registerHelper("funThumbnail", function(thumbnail) {
+        if(thumbnail) return thumbnail;
+        else return "/images/no_image.png";
+      });
+    </script>
+    <script>
+      Handlebars.registerHelper("strBook", function(book){ // book은 위에 @this가 들어감
+        return JSON.stringify(book);
+      });
+    </script> 
+</div>
+<script type="module">
+  import {app} from '/javascripts/config.js';
+  import {getDatabase, ref, set, get} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  
+  const db = getDatabase(app);
+  
+  let query=$(frm.query).val();
+  let page=1;
+  let size=5;
+  getList();
+
+  $(frm).on("submit", function(e){
+    e.preventDefault();
+    if($(frm.query).val()==""){
+      alert("검색어를 입력하세요!");
+      $(frm.query).focus();
+      return;
+    }
+    page=1;
+    getList();
+  });
+
+  $("#div_list").on("click", ".cart", async function(){
+    if(uid){
+      const book = JSON.parse($(this).attr("book"));
+      console.log(book);
+      const ref_cart = ref(db, `cart/${uid}/${book.isbn}`);
+      const snapshot = await get(ref_cart)
+
+      console.log(snapshot.val());
+      if(snapshot.val()){
+        alert("장바구니에 이미 존재하는 도서입니다.");
+      }
+      else{
+        await set(ref_cart, book);
+        alert("장바구니에 등록되었습니다.")
+      }
+    } 
+    else {
+      sessionStorage.setItem("target", window.location.href);
+      location.href = "/users/login";
+
+    }
+  });
+
+  $("#prev").on("click", function(){
+    page--;
+    getList();
+  });
+
+  $("#next").on("click", function(){
+    page++;
+    getList();
+  });
+
+  function getList(){
+    $.ajax({
+      type:"get",
+      url:"https://dapi.kakao.com/v3/search/book?target=title",
+      data: {query:query, size:size, page:page},
+      headers:{"Authorization": "KakaoAK 69165cf189700f373f1acff147404994"},
+      success:function(data){
+        //console.log(data);
+        const temp=Handlebars.compile($("#temp_list").html());
+        $("#div_list").html(temp(data));
+
+        
+        $("#total").html(data.meta.pageable_count);
+        const last = Math.ceil(data.meta.pageable_count/size);
+        $("#page").html(`${page}/${last}`);
+        if(page==1) $("#prev").attr("disabled", true);
+        else $("#prev").attr("disabled", false);
+
+        const is_end = data.meta.is_end;
+        if(is_end) $("#next").attr("disabled", true);
+        else $("#next").attr("disabled", false);
+      }
+    });
+  }
+  </script>

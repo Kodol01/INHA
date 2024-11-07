@@ -1,0 +1,42 @@
+<div class="row justify-content-center my-5">
+    <div class="col-md-6 col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-center"><%=title%></h3>
+          <form name="frm">
+            <input name="email" class="form-control mb-2" value="blue@test.com">
+            <input name="pass" type="password" class="form-control mb-2" value="12341234">
+            <button class="w-100 btn btn-primary">로그인</button>
+            <div class="text-end mt-3">
+                <a href="/users/join">회원가입</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import {app} from '/javascripts/config.js'; //firebase의 database를 불러오기
+    import {getAuth, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    const auth = getAuth(app);
+
+    $(frm).on("submit", function(e){
+      e.preventDefault();
+      const email = $(frm.email).val(); //frm에 적힌 email을 변수에 입력
+      const pass = $(frm.pass).val();
+
+      signInWithEmailAndPassword(auth, email, pass).then(success=>{ //로그인을 실행하는 함수이다. 내장함수같다.
+        alert("로그인 성공!");
+
+        sessionStorage.setItem("email", email); //sessionStorage에 이메일 저장
+        sessionStorage.setItem("uid", success.user.uid);
+        if(sessionStorage.getItem("target")){ //target에 대한건 찾아봐야함
+          location.href=sessionStorage.getItem("target");
+        }else{
+          location.href="/";
+        }
+      }).catch(error=>{ //에러 시 실패알림창 띄우기
+        alert("로그인 실패...");
+      });
+    });
+  </script>

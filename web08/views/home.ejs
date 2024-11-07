@@ -1,0 +1,93 @@
+<div class="row">
+    <h1 class="text-center my-5"><%=title%> (학번 : <%=inhacode%>)</h1>
+    <div class="row mb-2">
+      <form name="frm" class="col-6 col-md-4">
+        <div class="input-group">
+          <input name="query" class="form-control" value="인하대학교">
+          <button class="btn btn-primary">검색</button>
+        </div>
+      </form>
+    </div>
+    <div id="div_list" class="row"></div>
+    <div class="text-center">
+      <button id="prev" class="btn btn-primary">이전</button>
+      <span id="page" class="mx-3">1</span>
+      <button id="next" class="btn btn-primary">다음</button>
+    </div>
+    <script id="temp_list" type="x-handlebars-template">
+      {{#each documents}}
+        <div class="col-6 col-md-3 col-lg-2 mb-3">
+          <div class="card">
+            <div class="cardBody">
+              <a href="/kakao/book/info?title={{title}}&thumbnail={{thumbnail}}&price={{price}}&authors={{authors}}&isbn={{isbn}}&publisher={{publisher}}&contents={{contents}}">
+                <!--링크 주소로 값들을 넘기고 있다.(title = {{title}}이렇게 변수에 변수들을 넣어 전송하고 있다.)-->
+                <img src="{{funThumbnail thumbnail}}" width="100%">
+              </a>
+            </div>
+            <div class="card-footer">
+              <div class="ellipsis" style="font-size: 12px;">{{title}}</div>
+              <div>{{price}}</div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </script>
+    <script>
+      Handlebars.registerHelper("funThumbnail", function(thumbnail){
+        if(thumbnail) return thumbnail;
+        else return "http://via.placeholder.com/120x175";
+      }) //썸네일이 없으면 더미이미지 나타내주는 funThunbnamil이라는 함수를 만들었다.
+    </script>
+</div>
+<script>
+let query="자바";
+let size= 12;
+let page= 1;
+getList();
+
+$(frm).on("submit", function(e){ //frm의 이름을 가진 form을 'submit' 하면 다음과 같은 함수가 실행된다.
+  e.preventDefault();
+  query=$(frm.query).val(); //frm.query는 form에 input에 넣은 입력값이다. 그 값을 query라는 변수에 저장
+
+  if(query==""){ //query가 비어있으면
+    alert("검색어를 입력하세요")
+  }else{
+    getList(); //query값에 맞는 getList()실행
+  }
+})
+
+$("#next").on("click", function(){
+  page++;
+  getList();
+});
+$("#prev").on("click", function(){
+  page--;
+  getList();
+});
+
+  function getList(){
+        $.ajax({
+            type:"get",
+            url:"https://dapi.kakao.com/v3/search/book?target=title",
+            data: {query:query, size:size, page:page},
+            headers:{
+                "Authorization": "KakaoAK 7dc21d5852274d162cc3c15163505083"
+            }, //여기까지는 카카오 개발툴에서 값 가져오는거
+            success:function(data){ //여기부터는 값 불러오는데 성공하면 실행하는 함수(data를 매개변수로 가져온다)
+                console.log(data);
+                const temp= Handlebars.compile($("#temp_list").html()); //핸들바 temp_list의 html을 컴파일 후 temp에 저장
+                $("#div_list").html(temp(data));
+
+                const last = (Math.ceil(data.meta.pageable_count/size));
+
+                $("#page").html(page + "/" + last);
+
+                if(page==1) $("#prev").attr("disable", true);
+                else $("#prev").attr("disable", false);
+
+                if(data.meta.is_end) $("#next").attr("disabled", true);
+                else $("#next").attr("disabled", false);
+            }
+        });
+    }
+</script>
